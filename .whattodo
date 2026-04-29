@@ -1,0 +1,27 @@
+Phase 1: Projektstruktur & Setup
+ dotnet new webapi -n CVWebsite (Project erstellen)
+ GitHub-Repo + .gitignore (mit *.pdf)
+ NuGet-Packages installieren (Entity Framework, Security-Libraries)
+ Dockerfile & docker-compose.yml erstellen
+Phase 2: Backend-Grundlagen
+ Controllers erstellen (Login, PDF-Download)
+ Models definieren (LoginRequest, etc.)
+ Dependency Injection konfigurieren
+ Middleware für Logging
+Phase 3: Authentifizierung & Sicherheit
+ Passwort-Validierung (secure comparison)
+ Session-Management
+ CSRF-Schutz aktivieren
+Phase 4: PDF-Handling
+ PDF als Base64-Secret in Railway speichern
+ Endpoint zum Streamen der PDF (nur nach Auth)
+ Content-Type Header setzen
+Phase 5: Bot-Schutz
+ Security Headers (HSTS, CSP)
+ Input Validation
+ Logging verdächtiger Requests
+Phase 6: Railway-Deployment
+ Railway-Projekt erstellen
+ Docker Image deployen
+ Umgebungsvariablen konfigurieren
+ Domain verbinden

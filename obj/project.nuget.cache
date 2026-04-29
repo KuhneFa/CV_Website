@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "dgSpecHash": "BCQnLxvj40E=",
+  "success": true,
+  "projectFilePath": "/Users/fabiankassner/Documents/4 Semester/Website/cv_website/..csproj",
+  "expectedPackageFiles": [
+    "/Users/fabiankassner/.nuget/packages/aspnetcoreratelimit/5.0.0/aspnetcoreratelimit.5.0.0.nupkg.sha512",
+    "/Users/fabiankassner/.nuget/packages/bcrypt.net-next/4.1.0/bcrypt.net-next.4.1.0.nupkg.sha512",
+    "/Users/fabiankassner/.nuget/packages/microsoft.aspnetcore.openapi/10.0.7/microsoft.aspnetcore.openapi.10.0.7.nupkg.sha512",
+    "/Users/fabiankassner/.nuget/packages/microsoft.openapi/2.0.0/microsoft.openapi.2.0.0.nupkg.sha512",
+    "/Users/fabiankassner/.nuget/packages/newtonsoft.json/13.0.2/newtonsoft.json.13.0.2.nupkg.sha512"
+  ],
+  "logs": []
+}
