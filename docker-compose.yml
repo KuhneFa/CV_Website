@@ -1,0 +1,19 @@
+version: '3.9'
+
+services:
+  cvwebsite:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - Auth__PasswordHash=$2a$11$PLACEHOLDER_BCRYPT_HASH
+      - Pdf__ContentBase64=
+      - Cors__AllowedOrigins=http://localhost:3000,http://localhost:8080
+    volumes:
+      - .:/app
+    command: dotnet watch run --no-hot-reload
+    # Für Production: auskommentieren und "dotnet watch" entfernen
+    # restart: always

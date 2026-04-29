@@ -202,9 +202,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/fabiankassner/Documents/4 Semester/Website/cv_website/..csproj",
-      "projectName": ".",
-      "projectPath": "/Users/fabiankassner/Documents/4 Semester/Website/cv_website/..csproj",
+      "projectUniqueName": "/Users/fabiankassner/Documents/4 Semester/Website/cv_website/CV_Website.csproj",
+      "projectName": "CV_Website",
+      "projectPath": "/Users/fabiankassner/Documents/4 Semester/Website/cv_website/CV_Website.csproj",
       "packagesPath": "/Users/fabiankassner/.nuget/packages/",
       "outputPath": "/Users/fabiankassner/Documents/4 Semester/Website/cv_website/obj/",
       "projectStyle": "PackageReference",

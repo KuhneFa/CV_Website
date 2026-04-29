@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "BCQnLxvj40E=",
+  "dgSpecHash": "zzgee/X76W8=",
   "success": true,
-  "projectFilePath": "/Users/fabiankassner/Documents/4 Semester/Website/cv_website/..csproj",
+  "projectFilePath": "/Users/fabiankassner/Documents/4 Semester/Website/cv_website/CV_Website.csproj",
   "expectedPackageFiles": [
     "/Users/fabiankassner/.nuget/packages/aspnetcoreratelimit/5.0.0/aspnetcoreratelimit.5.0.0.nupkg.sha512",
     "/Users/fabiankassner/.nuget/packages/bcrypt.net-next/4.1.0/bcrypt.net-next.4.1.0.nupkg.sha512",
