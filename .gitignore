@@ -1,6 +1,50 @@
+# CV and Cover Letter
 *.pdf
+
+# Build artifacts
 bin/
 obj/
+
+# User-specific files
+*.user
+*.rsuser
+*.suo
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE folders
+.vs/
+.vscode/
+.idea/
+
+# Rider
+*.sln.iml
+
+# NuGet
+packages/
+*.nupkg
+
+# Environment / secrets
 appsettings.json
 appsettings.*.json
 !appsettings.example.json
+
+# Optional: local env files
+.env
+.env.*
+
+# Publish output
+publish/
+
+# Test results
+TestResults/
+
+# Coverage
+coverage/
+*.coverage
+*.coveragexml
