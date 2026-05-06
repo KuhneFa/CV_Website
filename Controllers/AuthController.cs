@@ -68,6 +68,53 @@ public class AuthController : ControllerBase
         return Ok(new { message = "Logout erfolgreich" });
     }
 
+    /// <summary>
+    /// Admin-Login (anderes Passwort als Public-User)
+    /// POST: /api/auth/admin-login
+    /// </summary>
+    [HttpPost("admin-login")]
+    public IActionResult AdminLogin([FromBody] LoginRequest request)
+    {
+        if (request == null || string.IsNullOrWhiteSpace(request.Password))
+        {
+            _logger.LogWarning("Admin-Login-Versuch mit leerem Passwort");
+            return BadRequest(new LoginResponse 
+            { 
+                Success = false, 
+                Message = "Admin-Passwort erforderlich" 
+            });
+        }
+
+        if (request.Password.Length > 1000)
+        {
+            _logger.LogWarning("Admin-Login-Versuch mit zu langem Passwort");
+            return BadRequest(new LoginResponse 
+            { 
+                Success = false, 
+                Message = "Ungültiges Passwort" 
+            });
+        }
+
+        if (_authService.ValidateAdminPassword(request.Password))
+        {
+            HttpContext.Session.SetString("IsAuthenticated", "true");
+            HttpContext.Session.SetString("IsAdmin", "true");
+            _logger.LogInformation("✅ Erfolgreicher Admin-Login");
+            return Ok(new LoginResponse 
+            { 
+                Success = true, 
+                Message = "Admin-Login erfolgreich" 
+            });
+        }
+
+        _logger.LogWarning("⚠️ Fehlgeschlagener Admin-Login");
+        return Unauthorized(new LoginResponse 
+        { 
+            Success = false, 
+            Message = "Falsches Admin-Passwort" 
+        });
+    }
+
     [HttpGet("status")]
     public IActionResult GetStatus()
     {
@@ -92,62 +139,4 @@ public class AuthController : ControllerBase
         return Ok(new { password, hash });
     }
 
-    /// <summary>
-    /// Admin: PDF hochladen (nur mit Admin-Passwort)
-    /// POST: /api/auth/upload
-    /// Content-Type: multipart/form-data
-    /// Body: file, adminPassword
-    /// </summary>
-    [HttpPost("upload")]
-    public async Task<IActionResult> UploadPdf([FromForm] IFormFile file, [FromForm] string adminPassword)
-    {
-        if (string.IsNullOrWhiteSpace(adminPassword))
-        {
-            _logger.LogWarning("Upload-Versuch ohne Admin-Passwort");
-            return Unauthorized(new { success = false, message = "Admin-Passwort erforderlich" });
-        }
-
-        if (!_authService.ValidateAdminPassword(adminPassword))
-        {
-            _logger.LogWarning("Upload mit falschemAdmin-Passwort");
-            return Unauthorized(new { success = false, message = "Falsches Admin-Passwort" });
-        }
-
-        if (file == null || file.Length == 0)
-        {
-            return BadRequest(new { success = false, message = "Keine PDF-Datei ausgewählt" });
-        }
-
-        if (!file.ContentType.Equals("application/pdf", StringComparison.OrdinalIgnoreCase))
-        {
-            return BadRequest(new { success = false, message = "Nur PDF-Dateien erlaubt" });
-        }
-
-        try
-        {
-            using (var ms = new MemoryStream())
-            {
-                await file.CopyToAsync(ms);
-                byte[] pdfBytes = ms.ToArray();
-                
-                if (pdfBytes.Length > 50 * 1024 * 1024) // 50 MB Limit
-                {
-                    return BadRequest(new { success = false, message = "PDF zu groß (Max 50 MB)" });
-                }
-
-                string base64Pdf = Convert.ToBase64String(pdfBytes);
-                
-                // TODO: Speichere PDF persistenter (z.B. in Datei oder DB)
-                // Für jetzt speichern wir es nur im Memory
-                
-                _logger.LogInformation($"✅ Admin hat PDF hochgeladen ({pdfBytes.Length} bytes, {file.FileName})");
-                return Ok(new { success = true, message = "PDF erfolgreich hochgeladen", size = pdfBytes.Length });
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError($"Fehler beim PDF-Upload: {ex.Message}");
-            return StatusCode(500, new { success = false, message = "Fehler beim Upload" });
-        }
-    }
 }

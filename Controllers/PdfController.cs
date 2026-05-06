@@ -60,4 +60,119 @@ public class PdfController : ControllerBase
         bool hasAccess = _pdfService.IsValidRequest(HttpContext);
         return Ok(new { hasAccess });
     }
+
+    /// <summary>
+    /// PDF hochladen (nur für Admin)
+    /// POST: /api/pdf/upload
+    /// Content-Type: multipart/form-data
+    /// </summary>
+    [HttpPost("upload")]
+    public async Task<IActionResult> Upload([FromForm] IFormFile file)
+    {
+        // Admin-Authentifizierung prüfen
+        if (!_pdfService.IsAdminRequest(HttpContext))
+        {
+            _logger.LogWarning($"❌ Unautorisierter Upload-Versuch von {HttpContext.Connection.RemoteIpAddress}");
+            return Unauthorized(new { success = false, message = "Nur Admin darf PDFs hochladen" });
+        }
+
+        if (file == null || file.Length == 0)
+        {
+            _logger.LogWarning("❌ Upload ohne Datei");
+            return BadRequest(new { success = false, message = "Keine PDF-Datei ausgewählt" });
+        }
+
+        if (!file.ContentType.Equals("application/pdf", StringComparison.OrdinalIgnoreCase))
+        {
+            _logger.LogWarning($"❌ Upload mit falscher Content-Type: {file.ContentType}");
+            return BadRequest(new { success = false, message = "Nur PDF-Dateien erlaubt" });
+        }
+
+        // Max 50 MB
+        const long maxSize = 50 * 1024 * 1024;
+        if (file.Length > maxSize)
+        {
+            _logger.LogWarning($"❌ PDF zu groß: {file.Length} bytes");
+            return BadRequest(new { success = false, message = "PDF zu groß (Max 50 MB)" });
+        }
+
+        try
+        {
+            using (var ms = new MemoryStream())
+            {
+                await file.CopyToAsync(ms);
+                byte[] pdfBytes = ms.ToArray();
+
+                if (!IsPdfContent(pdfBytes))
+                {
+                    _logger.LogWarning($"❌ Upload ohne PDF-Signatur: {file.FileName}");
+                    return BadRequest(new { success = false, message = "Datei ist keine gültige PDF" });
+                }
+
+                if (_pdfService.SavePdfContent(pdfBytes))
+                {
+                    _logger.LogInformation($"✅ Admin hat PDF hochgeladen: {file.FileName} ({pdfBytes.Length} bytes)");
+                    return Ok(new 
+                    { 
+                        success = true, 
+                        message = "PDF erfolgreich hochgeladen",
+                        size = pdfBytes.Length,
+                        fileName = file.FileName
+                    });
+                }
+                else
+                {
+                    return StatusCode(500, new { success = false, message = "Fehler beim Speichern der PDF" });
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"❌ Fehler beim PDF-Upload: {ex.Message}");
+            return StatusCode(500, new { success = false, message = "Fehler beim Upload" });
+        }
+    }
+
+    /// <summary>
+    /// PDF löschen (nur für Admin)
+    /// DELETE: /api/pdf/delete
+    /// </summary>
+    [HttpDelete("delete")]
+    public IActionResult Delete()
+    {
+        // Admin-Authentifizierung prüfen
+        if (!_pdfService.IsAdminRequest(HttpContext))
+        {
+            _logger.LogWarning($"❌ Unautorisierter Delete-Versuch von {HttpContext.Connection.RemoteIpAddress}");
+            return Unauthorized(new { success = false, message = "Nur Admin darf PDFs löschen" });
+        }
+
+        try
+        {
+            if (_pdfService.DeletePdfContent())
+            {
+                _logger.LogInformation("✅ Admin hat PDF gelöscht");
+                return Ok(new { success = true, message = "PDF erfolgreich gelöscht" });
+            }
+            else
+            {
+                return StatusCode(500, new { success = false, message = "Fehler beim Löschen der PDF" });
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"❌ Fehler beim PDF-Delete: {ex.Message}");
+            return StatusCode(500, new { success = false, message = "Fehler beim Löschen" });
+        }
+    }
+
+    private static bool IsPdfContent(byte[] content)
+    {
+        return content.Length >= 5
+            && content[0] == '%'
+            && content[1] == 'P'
+            && content[2] == 'D'
+            && content[3] == 'F'
+            && content[4] == '-';
+    }
 }

@@ -1,2 +1,13 @@
-bin/
-obj/
+**/.git
+**/.DS_Store
+**/bin
+**/obj
+**/.next
+**/node_modules
+**/.env
+**/.env.*
+appsettings.json
+appsettings.*.json
+!appsettings.example.json
+*.pdf
+pdf_base64.txt
