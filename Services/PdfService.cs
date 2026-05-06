@@ -111,6 +111,12 @@ public class PdfService : IPdfService
             // Versuche in Datei zu speichern
             try
             {
+                // Always keep exactly one uploaded PDF.
+                if (File.Exists(_pdfStoragePath))
+                {
+                    File.Delete(_pdfStoragePath);
+                }
+
                 File.WriteAllBytes(_pdfStoragePath, pdfBytes);
                 _logger.LogInformation($"✅ PDF in Datei gespeichert ({pdfBytes.Length} bytes)");
             }
