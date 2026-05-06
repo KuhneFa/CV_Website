@@ -1,6 +1,6 @@
 # CV Website - Projekt Status
 
-**Letztes Update:** 6. Mai 2026  
+**Letztes Update:** 7. Mai 2026  
 **Ziel:** Website mit passwortgeschütztem CV (PDF) + Admin-Bereich für Upload  
 **Deployment:** Railway
 
@@ -20,6 +20,7 @@
 - [x] Session Management (Admin-Flag in Session)
 - [x] CORS konfiguriert (localhost:3000)
 - [x] Rate Limiting (100 req/min allgemein, 5 req/min Login)
+- [x] Honeypot-Feld im Login gegen einfache Bot-Form-Submits
 - [x] Security Headers Middleware
 - [x] Input Validation & Logging mit Emoji-Indikatoren
 - ✅ **BUILD: Erfolgreich** (0 Errors)
@@ -87,6 +88,21 @@
 - [x] Logging für Sicherheitsereignisse (mit Emojis für Visualisierung)
 - [ ] CSRF Protection (für Production)
 - [ ] Content Security Policy Headers (optional)
+- [ ] Rate-Limits für Admin-Login separat prüfen/verschärfen (`/api/auth/admin-login`)
+- [ ] Optional: temporäre IP-/Session-Sperre nach wiederholten Fehlversuchen
+- [ ] Optional: serverseitige Audit-Logs für Login-/Upload-Versuche ohne sensible Daten
+- [ ] Optional: produktionsreife Persistenz/Backups für `data/cv.pdf` auf Railway prüfen
+
+Hinweis: Das Honeypot-Feld ist nur ein leichter Bot-Filter. Wichtiger bleiben serverseitiges Rate Limiting, Logging, sichere Cookies, starke Passwörter und später CSRF-Schutz.
+
+---
+
+## 🎨 UI - NÄCHSTE SCHRITTE
+
+- [ ] PDF-Anzeige für Default User ästhetischer und mittiger darstellen
+- [ ] PDF-Vorschau im Adminbereich ästhetischer und mittiger darstellen
+- [ ] Viewer/Admin PDF-Fläche an das schwarze Grid-Design anpassen
+- [ ] Mobile Darstellung der PDF-Ansicht prüfen
 
 ---
 

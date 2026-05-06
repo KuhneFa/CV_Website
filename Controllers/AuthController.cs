@@ -32,6 +32,16 @@ public class AuthController : ControllerBase
             });
         }
 
+        if (!string.IsNullOrWhiteSpace(request.Website))
+        {
+            _logger.LogWarning("Bot-verdächtiger Login-Versuch über Honeypot-Feld");
+            return BadRequest(new LoginResponse
+            {
+                Success = false,
+                Message = "Ungültige Anfrage"
+            });
+        }
+
         if (request.Password.Length > 1000)
         {
             _logger.LogWarning("Login-Versuch mit zu langem Passwort");
@@ -82,6 +92,16 @@ public class AuthController : ControllerBase
             { 
                 Success = false, 
                 Message = "Admin-Passwort erforderlich" 
+            });
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.Website))
+        {
+            _logger.LogWarning("Bot-verdächtiger Admin-Login-Versuch über Honeypot-Feld");
+            return BadRequest(new LoginResponse
+            {
+                Success = false,
+                Message = "Ungültige Anfrage"
             });
         }
 
