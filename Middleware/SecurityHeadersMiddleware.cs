@@ -28,7 +28,7 @@ public class SecurityHeadersMiddleware
         // CSP: Verhindert XSS durch Einschränkung von Inline-Scripts
         context.Response.Headers.Append(
             "Content-Security-Policy",
-            "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:"
+            "default-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'"
         );
 
         // X-Content-Type-Options: Verhindert MIME-Sniffing

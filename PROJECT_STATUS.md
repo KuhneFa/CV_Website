@@ -19,20 +19,22 @@
 - [x] PdfController (DELETE /api/pdf/delete) ✨
 - [x] Session Management (Admin-Flag in Session)
 - [x] CORS konfiguriert (localhost:3000)
-- [x] Rate Limiting (100 req/min allgemein, 5 req/min Login)
+- [x] Rate Limiting (100 req/min allgemein, 5 req/min Login/Admin-Login)
 - [x] Honeypot-Feld im Login gegen einfache Bot-Form-Submits
+- [x] Temporäre serverseitige Sperre nach wiederholten Fehlversuchen
+- [x] CSRF-Token für Login, Logout, Upload und Delete
 - [x] Security Headers Middleware
 - [x] Input Validation & Logging mit Emoji-Indikatoren
 - ✅ **BUILD: Erfolgreich** (0 Errors)
 
 ---
 
-## ✅ FRONTEND (Next.js 14) - KOMPLETT
+## ✅ FRONTEND (Next.js 16) - KOMPLETT
 
 ### Setup:
-- [x] Next.js 14 mit TypeScript
+- [x] Next.js 16 mit TypeScript
 - [x] Tailwind CSS 4
-- [x] Modernes Color-Theme (Schwarz/Dunkelblau #0a0e27 + Silber/Weiß #e5e7eb)
+- [x] Minimalistisches Schwarz/Weiß UI mit Grid-Linien
 - [x] Custom color extensions in tailwind.config.ts
 - [x] Globals CSS mit Dark-Theme Styling
 - ✅ **BUILD: Erfolgreich** (0 Errors)
@@ -86,12 +88,13 @@
 - [x] Security Headers (Middleware)
 - [x] Input Validation (Längen-Prüfung, ContentType-Prüfung)
 - [x] Logging für Sicherheitsereignisse (mit Emojis für Visualisierung)
-- [ ] CSRF Protection (für Production)
-- [ ] Content Security Policy Headers (optional)
-- [ ] Rate-Limits für Admin-Login separat prüfen/verschärfen (`/api/auth/admin-login`)
-- [ ] Optional: temporäre IP-/Session-Sperre nach wiederholten Fehlversuchen
-- [ ] Optional: serverseitige Audit-Logs für Login-/Upload-Versuche ohne sensible Daten
-- [ ] Optional: produktionsreife Persistenz/Backups für `data/cv.pdf` auf Railway prüfen
+- [x] CSRF Protection (für Production-Basis)
+- [x] Content Security Policy Headers
+- [x] Rate-Limits für Admin-Login separat gesetzt (`/api/auth/admin-login`)
+- [x] Temporäre IP-basierte Sperre nach wiederholten Fehlversuchen
+- [x] Basis-Audit-Logs für Login-/Upload-Versuche ohne sensible Daten
+- [x] PDF-Speicherpfad per `Pdf__StoragePath` konfigurierbar gemacht
+- [x] Deployment-Doku für persistentes `/data` Volume ergänzt
 
 Hinweis: Das Honeypot-Feld ist nur ein leichter Bot-Filter. Wichtiger bleiben serverseitiges Rate Limiting, Logging, sichere Cookies, starke Passwörter und später CSRF-Schutz.
 
@@ -99,37 +102,40 @@ Hinweis: Das Honeypot-Feld ist nur ein leichter Bot-Filter. Wichtiger bleiben se
 
 ## 🎨 UI - NÄCHSTE SCHRITTE
 
-- [ ] PDF-Anzeige für Default User ästhetischer und mittiger darstellen
-- [ ] PDF-Vorschau im Adminbereich ästhetischer und mittiger darstellen
-- [ ] Viewer/Admin PDF-Fläche an das schwarze Grid-Design anpassen
-- [ ] Mobile Darstellung der PDF-Ansicht prüfen
+- [x] PDF-Anzeige für Default User ästhetischer und mittiger darstellen
+- [x] PDF-Vorschau im Adminbereich ästhetischer und mittiger darstellen
+- [x] Viewer/Admin PDF-Fläche an das schwarze Grid-Design anpassen
+- [x] Mobile Darstellung der PDF-Ansicht per responsive CSS berücksichtigt
 
 ---
 
 ## 🎯 TODO - DEPLOYMENT ZU RAILWAY
 
 ### 1. Vorbereitung:
-- [ ] Git Repo aktualisieren (git push)
-- [ ] .gitignore überprüfen (keine Secrets!)
-- [ ] appsettings.example.json erstellen (ohne echte Werte)
+- [ ] Git Repo aktualisieren (git push) - externer Schritt
+- [x] .gitignore überprüft (keine Secrets/PDFs)
+- [x] appsettings.example.json erstellt (ohne echte Werte)
+- [x] GitHub Actions CI für Backend/Frontend Build + Login/Upload Integrationstest
+- [x] Deployment-Checkliste erstellt (`DEPLOYMENT.md`)
 
 ### 2. Railway Setup:
-- [ ] Railway Account & Projekt erstellen
-- [ ] Environment Variables auf Railway einstellen:
+- [ ] Railway Account & Projekt erstellen - externer Schritt
+- [ ] Environment Variables auf Railway einstellen - externer Schritt:
   - `Auth:PasswordHash` (BCrypt Hash)
   - `Auth:AdminPasswordHash` (BCrypt Hash)
   - `Cors:AllowedOrigins` (Production Domain)
+  - `Pdf:StoragePath` (z.B. `/data/cv.pdf`)
 
 ### 3. Frontend Deployment:
-- [ ] next.config.ts für Production überprüfen
-- [ ] .env.production erstellen (mit Production API URL)
-- [ ] Build testen: `npm run build`
+- [x] next.config.ts für Production überprüft
+- [x] Production Env Beispiel erstellt (`cv_frontend/env.production.example`)
+- [x] Build testen: `npm run build`
 
 ### 4. Testen:
-- [ ] User-Login testen
-- [ ] Admin-Login testen
-- [ ] PDF Upload/Delete testen
-- [ ] Responsive Design prüfen
+- [x] User-Login lokal/CI testen
+- [x] Admin-Login lokal/CI testen
+- [x] PDF Upload lokal/CI testen
+- [x] Responsive Design technisch berücksichtigt
 
 ---
 
@@ -142,7 +148,7 @@ Hinweis: Das Honeypot-Feld ist nur ein leichter Bot-Filter. Wichtiger bleiben se
 - **PDF Speichern:** Datei-basiert mit In-Memory Fallback
 
 ### Frontend:
-- **Framework:** Next.js 14 (App Router)
+- **Framework:** Next.js 16 (App Router)
 - **UI:** Tailwind CSS mit Custom Theme
 - **State:** Client-side mit Hooks (useAuth, useState)
 - **API:** Fetch mit credentials: 'include'

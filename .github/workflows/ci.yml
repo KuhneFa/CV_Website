@@ -1,0 +1,123 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+
+jobs:
+  build-and-integration-test:
+    runs-on: ubuntu-latest
+
+    env:
+      ASPNETCORE_ENVIRONMENT: Development
+      PORT: 8080
+      Auth__PasswordHash: $2a$11$oj7qe5K9OXXxeN4yVvcqI.amD0E8MJpuXkC5njgx1MFY5jhR2uwTq
+      Auth__AdminPasswordHash: $2a$11$CjMf5GLsmzWNJVM1gxSssum51RRFnbkoxOFO2PUT6FmRSbp.DQRKC
+      Pdf__StoragePath: /tmp/cv-website-ci.pdf
+      Pdf__ContentBase64: ""
+      Cors__AllowedOrigins: http://localhost:3000
+      NEXT_PUBLIC_API_BASE: http://127.0.0.1:8080/api
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: cv_frontend/package-lock.json
+
+      - name: Build backend
+        run: dotnet build
+
+      - name: Install frontend dependencies
+        working-directory: cv_frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: cv_frontend
+        run: npm run build
+
+      - name: Start backend
+        run: |
+          dotnet run --no-build > "$RUNNER_TEMP/backend.log" 2>&1 &
+          echo $! > "$RUNNER_TEMP/backend.pid"
+
+          for attempt in {1..30}; do
+            if curl -fsS http://127.0.0.1:8080/health >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+
+          cat "$RUNNER_TEMP/backend.log"
+          exit 1
+
+      - name: Test default login
+        run: |
+          csrf_response="$(curl -fsS -c "$RUNNER_TEMP/user-cookies.txt" http://127.0.0.1:8080/api/auth/csrf)"
+          token="$(node -e 'process.stdout.write(JSON.parse(process.argv[1]).token)' "$csrf_response")"
+
+          response="$(curl -fsS -X POST http://127.0.0.1:8080/api/auth/login \
+            -H "Content-Type: application/json" \
+            -H "X-CSRF-TOKEN: $token" \
+            -b "$RUNNER_TEMP/user-cookies.txt" \
+            -c "$RUNNER_TEMP/user-cookies.txt" \
+            -d '{"password":"ci-user-password","website":""}')"
+
+          node -e 'const r = JSON.parse(process.argv[1]); if (!r.success) process.exit(1)' "$response"
+
+      - name: Test admin login and dummy PDF upload
+        run: |
+          csrf_response="$(curl -fsS -c "$RUNNER_TEMP/admin-cookies.txt" http://127.0.0.1:8080/api/auth/csrf)"
+          token="$(node -e 'process.stdout.write(JSON.parse(process.argv[1]).token)' "$csrf_response")"
+
+          login_response="$(curl -fsS -X POST http://127.0.0.1:8080/api/auth/admin-login \
+            -H "Content-Type: application/json" \
+            -H "X-CSRF-TOKEN: $token" \
+            -b "$RUNNER_TEMP/admin-cookies.txt" \
+            -c "$RUNNER_TEMP/admin-cookies.txt" \
+            -d '{"password":"ci-admin-password","website":""}')"
+
+          node -e 'const r = JSON.parse(process.argv[1]); if (!r.success) process.exit(1)' "$login_response"
+
+          printf '%s\n' \
+            '%PDF-1.4' \
+            '1 0 obj' \
+            '<< /Type /Catalog /Pages 2 0 R >>' \
+            'endobj' \
+            '2 0 obj' \
+            '<< /Type /Pages /Count 0 >>' \
+            'endobj' \
+            'trailer' \
+            '<< /Root 1 0 R >>' \
+            '%%EOF' > "$RUNNER_TEMP/dummy.pdf"
+
+          upload_response="$(curl -fsS -X POST http://127.0.0.1:8080/api/pdf/upload \
+            -H "X-CSRF-TOKEN: $token" \
+            -b "$RUNNER_TEMP/admin-cookies.txt" \
+            -F "file=@$RUNNER_TEMP/dummy.pdf;type=application/pdf")"
+
+          node -e 'const r = JSON.parse(process.argv[1]); if (!r.success) process.exit(1)' "$upload_response"
+          test -s /tmp/cv-website-ci.pdf
+
+      - name: Show backend log on failure
+        if: failure()
+        run: cat "$RUNNER_TEMP/backend.log" || true
+
+      - name: Stop backend
+        if: always()
+        run: |
+          if [ -f "$RUNNER_TEMP/backend.pid" ]; then
+            kill "$(cat "$RUNNER_TEMP/backend.pid")" || true
+          fi

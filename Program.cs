@@ -1,10 +1,21 @@
 using AspNetCoreRateLimit;
 using CVWebsite.Services;
 using CVWebsite.Middleware;
+using Microsoft.AspNetCore.Antiforgery;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+builder.Services.AddAntiforgery(options =>
+{
+    options.HeaderName = "X-CSRF-TOKEN";
+    options.Cookie.Name = "CVWebsite.Csrf";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = builder.Environment.IsDevelopment()
+        ? CookieSecurePolicy.SameAsRequest
+        : CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.Strict;
+});
 
 // 🔧 FIX: Required for Session
 builder.Services.AddDistributedMemoryCache();
@@ -32,7 +43,8 @@ builder.Services.Configure<IpRateLimitOptions>(options =>
     options.GeneralRules = new List<RateLimitRule>
     {
         new RateLimitRule { Endpoint = "*", Limit = 100, Period = "1m" },
-        new RateLimitRule { Endpoint = "*/api/auth/login", Limit = 5, Period = "1m" }
+        new RateLimitRule { Endpoint = "*/api/auth/login", Limit = 5, Period = "1m" },
+        new RateLimitRule { Endpoint = "*/api/auth/admin-login", Limit = 5, Period = "1m" }
     };
 });
 
@@ -50,6 +62,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPdfService, PdfService>();
+builder.Services.AddSingleton<ILoginAttemptService, LoginAttemptService>();
 
 var app = builder.Build();
 
@@ -73,6 +86,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapGet("/api/auth/csrf", (IAntiforgery antiforgery, HttpContext context) =>
+{
+    var tokens = antiforgery.GetAndStoreTokens(context);
+    return Results.Ok(new { token = tokens.RequestToken });
+});
 app.MapGet("/health", () => Results.Ok("Healthy"));
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";

@@ -44,7 +44,7 @@ public class PdfService : IPdfService
     {
         _configuration = configuration;
         _logger = logger;
-        _pdfStoragePath = Path.Combine(env.ContentRootPath, "data", "cv.pdf");
+        _pdfStoragePath = GetStoragePath(env);
         
         // Erstelle data-Verzeichnis wenn nicht vorhanden
         var directory = Path.GetDirectoryName(_pdfStoragePath);
@@ -52,6 +52,19 @@ public class PdfService : IPdfService
         {
             Directory.CreateDirectory(directory!);
         }
+    }
+
+    private string GetStoragePath(IWebHostEnvironment env)
+    {
+        var configuredPath = _configuration["Pdf:StoragePath"];
+        if (!string.IsNullOrWhiteSpace(configuredPath))
+        {
+            return Path.IsPathRooted(configuredPath)
+                ? configuredPath
+                : Path.Combine(env.ContentRootPath, configuredPath);
+        }
+
+        return Path.Combine(env.ContentRootPath, "data", "cv.pdf");
     }
 
     /// <summary>

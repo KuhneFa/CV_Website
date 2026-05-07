@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Antiforgery;
 using CVWebsite.Services;
 
 namespace CVWebsite.Controllers;
@@ -11,11 +12,13 @@ namespace CVWebsite.Controllers;
 public class PdfController : ControllerBase
 {
     private readonly IPdfService _pdfService;
+    private readonly IAntiforgery _antiforgery;
     private readonly ILogger<PdfController> _logger;
 
-    public PdfController(IPdfService pdfService, ILogger<PdfController> logger)
+    public PdfController(IPdfService pdfService, IAntiforgery antiforgery, ILogger<PdfController> logger)
     {
         _pdfService = pdfService;
+        _antiforgery = antiforgery;
         _logger = logger;
     }
 
@@ -69,6 +72,11 @@ public class PdfController : ControllerBase
     [HttpPost("upload")]
     public async Task<IActionResult> Upload([FromForm] IFormFile file)
     {
+        if (!await IsCsrfValid())
+        {
+            return BadRequest(new { success = false, message = "Ungültige Anfrage" });
+        }
+
         // Admin-Authentifizierung prüfen
         if (!_pdfService.IsAdminRequest(HttpContext))
         {
@@ -138,8 +146,13 @@ public class PdfController : ControllerBase
     /// DELETE: /api/pdf/delete
     /// </summary>
     [HttpDelete("delete")]
-    public IActionResult Delete()
+    public async Task<IActionResult> Delete()
     {
+        if (!await IsCsrfValid())
+        {
+            return BadRequest(new { success = false, message = "Ungültige Anfrage" });
+        }
+
         // Admin-Authentifizierung prüfen
         if (!_pdfService.IsAdminRequest(HttpContext))
         {
@@ -174,5 +187,19 @@ public class PdfController : ControllerBase
             && content[2] == 'D'
             && content[3] == 'F'
             && content[4] == '-';
+    }
+
+    private async Task<bool> IsCsrfValid()
+    {
+        try
+        {
+            await _antiforgery.ValidateRequestAsync(HttpContext);
+            return true;
+        }
+        catch (AntiforgeryValidationException)
+        {
+            _logger.LogWarning($"Ungültiger CSRF-Token von {HttpContext.Connection.RemoteIpAddress}");
+            return false;
+        }
     }
 }

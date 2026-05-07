@@ -1,0 +1,127 @@
+@import "tailwindcss";
+
+@theme {
+  --color-dark-bg: #000000;
+  --color-dark-card: #000000;
+  --color-dark-border: #ffffff;
+  --color-accent-silver: #ffffff;
+  --color-accent-muted: #a3a3a3;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #000000;
+  color: #ffffff;
+  font-family: var(--font-geist-sans);
+}
+
+.framework-grid {
+  position: relative;
+  overflow: hidden;
+  background-color: #000000;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.13) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.13) 1px, transparent 1px);
+  background-size: min(31vw, 640px) min(32vh, 320px);
+  background-position: 44px 78px;
+}
+
+.framework-grid::before,
+.framework-grid::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  border: 1px dashed rgba(255, 255, 255, 0.16);
+  border-radius: 9999px;
+}
+
+.framework-grid::before {
+  width: 140px;
+  height: 140px;
+  left: -72px;
+  top: 8px;
+}
+
+.framework-grid::after {
+  width: 142px;
+  height: 142px;
+  right: 28%;
+  bottom: -72px;
+}
+
+.framework-grid > * {
+  position: relative;
+  z-index: 1;
+}
+
+.cta-field {
+  height: 96px;
+  border-radius: 14px;
+  background: #ededed;
+  color: #000000;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.08);
+}
+
+.cta-field:hover,
+.cta-field:focus {
+  background: #ffffff;
+}
+
+.cta-field::placeholder {
+  color: #000000;
+  opacity: 1;
+}
+
+.pdf-shell {
+  width: min(100%, 760px);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.pdf-frame {
+  width: 100%;
+  height: min(82vh, 980px);
+  min-height: 560px;
+  border: 0;
+  display: block;
+}
+
+@media (max-width: 640px) {
+  .pdf-frame {
+    height: 76vh;
+    min-height: 480px;
+  }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ffffff;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #d4d4d4;
+}
+
+/* Smooth transitions */
+button, a, input {
+  transition: all 0.3s ease;
+}

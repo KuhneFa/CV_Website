@@ -10,10 +10,16 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - Auth__PasswordHash=$2a$11$PLACEHOLDER_BCRYPT_HASH
+      - Auth__AdminPasswordHash=$2a$11$PLACEHOLDER_ADMIN_BCRYPT_HASH
       - Pdf__ContentBase64=
+      - Pdf__StoragePath=/data/cv.pdf
       - Cors__AllowedOrigins=http://localhost:3000,http://localhost:8080
     volumes:
       - .:/app
+      - cv_pdf_data:/data
     command: dotnet watch run --no-hot-reload
     # Für Production: auskommentieren und "dotnet watch" entfernen
     # restart: always
+
+volumes:
+  cv_pdf_data:
