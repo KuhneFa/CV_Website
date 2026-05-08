@@ -9,10 +9,10 @@ RUN dotnet publish -c Release -o /app/publish
 # Runtime Stage
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
-RUN useradd -m -u 1000 cvapp \
+RUN useradd -m cvapp \
     && mkdir -p /data \
     && chown -R cvapp:cvapp /app /data
+COPY --chown=cvapp:cvapp --from=build /app/publish .
 USER cvapp
-COPY --from=build /app/publish .
 EXPOSE 8080
 ENTRYPOINT ["dotnet", "CV_Website.dll"]
