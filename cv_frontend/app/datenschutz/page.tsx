@@ -75,12 +75,6 @@ export default function DatenschutzPage() {
               ein Beschwerderecht bei einer Datenschutzaufsichtsbehoerde.
             </p>
           </section>
-
-          <p className="text-sm text-white/55">
-            Hinweis: Diese Datenschutzerklaerung ist eine kompakte Vorlage und
-            ersetzt keine Rechtsberatung. Bitte die Platzhalter vor dem Livegang
-            ergaenzen.
-          </p>
         </div>
       </section>
     </main>

@@ -33,11 +33,6 @@ export default function ImpressumPage() {
               E-Mail: fabiankuhne@outlook.de
             </p>
           </div>
-
-          <p className="text-sm text-white/55">
-            Hinweis: Diese Seite ist als Vorlage angelegt. Bitte die Platzhalter
-            vor dem Livegang durch korrekte Angaben ersetzen.
-          </p>
         </div>
       </section>
     </main>
