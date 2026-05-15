@@ -19,16 +19,14 @@ export default function Home() {
     setError(null);
 
     try {
-      const adminResult = await api.auth.adminLogin(password, website);
+      const result = await api.auth.loginAuto(password, website);
       
-      if (adminResult.success) {
+      if (result.success && result.role === "admin") {
         router.push("/admin");
         return;
       }
 
-      const userResult = await api.auth.login(password, website);
-      
-      if (userResult.success) {
+      if (result.success && result.role === "user") {
         router.push("/viewer");
         return;
       }

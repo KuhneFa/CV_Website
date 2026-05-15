@@ -29,6 +29,106 @@ public class AuthController : ControllerBase
         _env = env;
     }
 
+    [HttpPost("login-auto")]
+    public async Task<IActionResult> LoginAuto([FromBody] LoginRequest request)
+    {
+        if (!await IsCsrfValid())
+        {
+            return BadRequest(new LoginResponse
+            {
+                Success = false,
+                Message = "Ungültige Anfrage"
+            });
+        }
+
+        if (request == null || string.IsNullOrWhiteSpace(request.Password))
+        {
+            _logger.LogWarning("Auto-Login-Versuch mit leerem Passwort");
+            return BadRequest(new LoginResponse
+            {
+                Success = false,
+                Message = "Passwort erforderlich"
+            });
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.Website))
+        {
+            _logger.LogWarning("Bot-verdächtiger Auto-Login-Versuch über Honeypot-Feld");
+            _loginAttemptService.RegisterFailedAttempt(GetLoginAttemptKey("auto"));
+            return BadRequest(new LoginResponse
+            {
+                Success = false,
+                Message = "Ungültige Anfrage"
+            });
+        }
+
+        if (request.Password.Length > 1000)
+        {
+            _logger.LogWarning("Auto-Login-Versuch mit zu langem Passwort");
+            return BadRequest(new LoginResponse
+            {
+                Success = false,
+                Message = "Ungültiges Passwort"
+            });
+        }
+
+        var adminAttemptKey = GetLoginAttemptKey("admin");
+        var userAttemptKey = GetLoginAttemptKey("user");
+
+        var isAdminLocked = _loginAttemptService.IsLocked(adminAttemptKey, out var adminRemaining);
+        var isUserLocked = _loginAttemptService.IsLocked(userAttemptKey, out var userRemaining);
+        if (isAdminLocked || isUserLocked)
+        {
+            var remaining = adminRemaining > userRemaining ? adminRemaining : userRemaining;
+            _logger.LogWarning($"Auto-Login temporär gesperrt für {HttpContext.Connection.RemoteIpAddress}");
+            return StatusCode(StatusCodes.Status429TooManyRequests, new LoginResponse
+            {
+                Success = false,
+                Message = $"Zu viele Versuche. Bitte in {Math.Ceiling(remaining.TotalMinutes)} Minuten erneut versuchen."
+            });
+        }
+
+        if (_authService.ValidateAdminPassword(request.Password))
+        {
+            HttpContext.Session.SetString("IsAuthenticated", "true");
+            HttpContext.Session.SetString("IsAdmin", "true");
+            _loginAttemptService.Reset(adminAttemptKey);
+            _loginAttemptService.Reset(userAttemptKey);
+            _logger.LogInformation("✅ Erfolgreicher Auto-Login als Admin");
+            return Ok(new
+            {
+                success = true,
+                message = "Admin-Login erfolgreich",
+                role = "admin"
+            });
+        }
+
+        if (_authService.ValidatePassword(request.Password))
+        {
+            HttpContext.Session.SetString("IsAuthenticated", "true");
+            HttpContext.Session.Remove("IsAdmin");
+            _loginAttemptService.Reset(adminAttemptKey);
+            _loginAttemptService.Reset(userAttemptKey);
+            _logger.LogInformation("Erfolgreicher Auto-Login als User");
+            return Ok(new
+            {
+                success = true,
+                message = "Login erfolgreich",
+                role = "user"
+            });
+        }
+
+        _logger.LogWarning("Fehlgeschlagener Auto-Login");
+        _loginAttemptService.RegisterFailedAttempt(adminAttemptKey);
+        _loginAttemptService.RegisterFailedAttempt(userAttemptKey);
+        return Ok(new
+        {
+            success = false,
+            message = "Ungültiges Passwort",
+            role = ""
+        });
+    }
+
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {

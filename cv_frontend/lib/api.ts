@@ -31,6 +31,16 @@ async function csrfHeaders(contentType?: string): Promise<Record<string, string>
 
 export const api = {
   auth: {
+    loginAuto: async (password: string, website = "") => {
+      const response = await fetch(`${API_BASE}/auth/login-auto`, {
+        method: "POST",
+        headers: await csrfHeaders("application/json"),
+        credentials: "include",
+        body: JSON.stringify({ password, website }),
+      });
+      return response.json();
+    },
+
     login: async (password: string, website = "") => {
       const response = await fetch(`${API_BASE}/auth/login`, {
         method: "POST",

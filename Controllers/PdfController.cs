@@ -40,8 +40,8 @@ public class PdfController : ControllerBase
         byte[]? pdfContent = _pdfService.GetPdfContent();
         if (pdfContent == null || pdfContent.Length == 0)
         {
-            _logger.LogError("PDF konnte nicht geladen werden");
-            return StatusCode(500, new { message = "PDF nicht verfügbar" });
+            _logger.LogWarning("PDF ist noch nicht verfügbar");
+            return NotFound(new { message = "PDF nicht verfügbar" });
         }
 
         // PDF mit sicheren Headers zurückgeben
