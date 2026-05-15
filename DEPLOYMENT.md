@@ -21,7 +21,7 @@ ASPNETCORE_ENVIRONMENT=Production
 PORT=8080
 Auth__PasswordHash=YOUR_USER_BCRYPT_HASH
 Auth__AdminPasswordHash=YOUR_ADMIN_BCRYPT_HASH
-Cors__AllowedOrigins=https://kathercv.de
+Cors__AllowedOrigins=https://www.kathercv.de
 Pdf__StoragePath=/data/cv.pdf
 Pdf__ContentBase64=
 ```
@@ -55,10 +55,13 @@ Do not point `NEXT_PUBLIC_API_BASE` to the frontend service itself.
 Recommended mapping:
 
 ```text
-kathercv.de       -> frontend service
-www.kathercv.de   -> frontend service, optional
+www.kathercv.de   -> frontend service
 api.kathercv.de   -> backend service, optional but clean
 ```
+
+Most DNS providers do not allow a normal CNAME at the apex/root domain
+`kathercv.de`. Use `www.kathercv.de` as the primary website domain unless your
+DNS provider supports ALIAS/ANAME/CNAME flattening at the apex.
 
 If you use both `kathercv.de` and `www.kathercv.de`, set backend CORS to both:
 
@@ -71,6 +74,23 @@ If you only use `kathercv.de`, this is enough:
 ```text
 Cors__AllowedOrigins=https://kathercv.de
 ```
+
+If you only use `www.kathercv.de`, this is enough:
+
+```text
+Cors__AllowedOrigins=https://www.kathercv.de
+```
+
+Railway domain assignment:
+
+```text
+www.kathercv.de -> frontend service (/cv_frontend)
+api.kathercv.de -> backend service (/)
+```
+
+If requests to `www.kathercv.de` show ASP.NET logs, then the domain is attached
+to the backend service or the frontend service is building from the wrong root
+directory. The frontend service must use root directory `/cv_frontend`.
 
 ## Production Notes
 

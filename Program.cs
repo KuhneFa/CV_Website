@@ -92,6 +92,13 @@ app.MapGet("/api/auth/csrf", (IAntiforgery antiforgery, HttpContext context) =>
     return Results.Ok(new { token = tokens.RequestToken });
 });
 app.MapGet("/health", () => Results.Ok("Healthy"));
+app.MapGet("/", () => Results.Ok(new
+{
+    service = "CV Website API",
+    status = "running",
+    health = "/health",
+    api = "/api"
+}));
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 app.Run($"http://0.0.0.0:{port}");
