@@ -52,6 +52,8 @@
 - [x] Login Page (/auth/login) - Passwort-Login für CV-Zugang
 - [x] Viewer Page (/viewer) - PDF-Anzeige in iframe
 - [x] Admin Page (/admin) - Admin-Login, Upload, Delete, Preview
+- [x] Impressum Page (/impressum) - Vorlage mit Platzhaltern
+- [x] Datenschutz Page (/datenschutz) - kompakte Vorlage mit Platzhaltern
 
 ### Features:
 - [x] Responsive Design (Mobile & Desktop)
@@ -61,6 +63,8 @@
 - [x] PDF Drag-and-Drop vorbereitet
 - [x] Logout Funktionalität
 - [x] Moderne Übergänge & Hover-Effects
+- [x] Zentrierter Footer mit Impressum/Datenschutz
+- [x] noindex/nofollow + robots.txt gegen Suchmaschinen-Indexierung
 
 ---
 
