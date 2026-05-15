@@ -19,18 +19,18 @@ export default function ImpressumPage() {
           <div>
             <h2 className="mb-2 text-lg font-semibold">Verantwortlich</h2>
             <p className="text-white/75">
-              Fabian Kassner
+              Fabian Kuhne
               <br />
-              [Ladungsfaehige Anschrift vor Veroeffentlichung eintragen]
+              Alaunstraße 83
               <br />
-              [PLZ Ort]
+              01099 Dresden
             </p>
           </div>
 
           <div>
             <h2 className="mb-2 text-lg font-semibold">Kontakt</h2>
             <p className="text-white/75">
-              E-Mail: [E-Mail-Adresse vor Veroeffentlichung eintragen]
+              E-Mail: fabiankuhne@outlook.de
             </p>
           </div>
 

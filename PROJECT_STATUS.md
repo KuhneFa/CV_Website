@@ -123,7 +123,7 @@ Hinweis: Das Honeypot-Feld ist nur ein leichter Bot-Filter. Wichtiger bleiben se
 - [x] Deployment-Checkliste erstellt (`DEPLOYMENT.md`)
 
 ### 2. Railway Setup:
-- [ ] Railway Account & Projekt erstellen - externer Schritt
+- [x] Railway Account & Projekt erstellen - externer Schritt
 - [ ] Environment Variables auf Railway einstellen - externer Schritt:
   - `Auth:PasswordHash` (BCrypt Hash)
   - `Auth:AdminPasswordHash` (BCrypt Hash)

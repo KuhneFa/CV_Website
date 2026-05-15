@@ -19,11 +19,11 @@ export default function DatenschutzPage() {
           <section>
             <h2 className="mb-2 text-lg font-semibold text-white">Verantwortlicher</h2>
             <p>
-              Fabian Kassner
+              Fabian Kuhne
               <br />
-              [Ladungsfaehige Anschrift vor Veroeffentlichung eintragen]
+              Alaunstraße 83, 01099 Dresden
               <br />
-              E-Mail: [E-Mail-Adresse vor Veroeffentlichung eintragen]
+              E-Mail: fabiankuhne@outlook.de
             </p>
           </section>
 
