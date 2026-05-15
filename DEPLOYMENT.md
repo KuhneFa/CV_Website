@@ -12,6 +12,16 @@ For Railway-only deployment, create two services from the same GitHub repository
 
 Do not make `cv_frontend` a separate Git repository. It is a normal folder in the root repository.
 
+If Railway accidentally builds the backend Dockerfile for the frontend service,
+set this variable on the frontend service:
+
+```text
+RAILWAY_DOCKERFILE_PATH=/Dockerfile.frontend
+```
+
+Then leave the frontend service root directory empty or set it to `/`; the
+frontend Dockerfile copies files from `cv_frontend/` explicitly.
+
 ## Backend Environment Variables
 
 Set these in the backend hosting platform:
