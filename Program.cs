@@ -2,6 +2,7 @@ using AspNetCoreRateLimit;
 using CVWebsite.Services;
 using CVWebsite.Middleware;
 using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +24,19 @@ builder.Services.AddAntiforgery(options =>
         : CookieSecurePolicy.Always;
     options.Cookie.SameSite = SameSiteMode.Strict;
 });
+
+var dataProtectionKeysPath = builder.Configuration["DataProtection:KeysPath"];
+if (string.IsNullOrWhiteSpace(dataProtectionKeysPath) && !builder.Environment.IsDevelopment())
+{
+    dataProtectionKeysPath = "/data/dp-keys";
+}
+
+if (!string.IsNullOrWhiteSpace(dataProtectionKeysPath))
+{
+    Directory.CreateDirectory(dataProtectionKeysPath);
+    builder.Services.AddDataProtection()
+        .PersistKeysToFileSystem(new DirectoryInfo(dataProtectionKeysPath));
+}
 
 // 🔧 FIX: Required for Session
 builder.Services.AddDistributedMemoryCache();
@@ -50,6 +64,7 @@ builder.Services.Configure<IpRateLimitOptions>(options =>
     options.GeneralRules = new List<RateLimitRule>
     {
         new RateLimitRule { Endpoint = "*", Limit = 100, Period = "1m" },
+        new RateLimitRule { Endpoint = "*/api/auth/login-auto", Limit = 5, Period = "1m" },
         new RateLimitRule { Endpoint = "*/api/auth/login", Limit = 5, Period = "1m" },
         new RateLimitRule { Endpoint = "*/api/auth/admin-login", Limit = 5, Period = "1m" }
     };
@@ -106,7 +121,12 @@ app.MapGet("/", () => Results.Ok(new
     service = "CV Website API",
     status = "running",
     health = "/health",
-    api = "/api"
+    api = "/api",
+    auth = new
+    {
+        csrf = "/api/auth/csrf",
+        loginAuto = "/api/auth/login-auto"
+    }
 }));
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
