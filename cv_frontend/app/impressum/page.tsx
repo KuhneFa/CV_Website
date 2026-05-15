@@ -5,7 +5,7 @@ export default function ImpressumPage() {
     <main className="framework-grid min-h-screen px-6 py-20 text-white">
       <section className="mx-auto max-w-2xl space-y-8 pb-24">
         <Link href="/" className="text-sm text-white/55 transition-colors hover:text-white">
-          Zurueck
+          Zurück
         </Link>
 
         <div className="space-y-5">
