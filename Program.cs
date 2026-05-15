@@ -33,7 +33,19 @@ if (string.IsNullOrWhiteSpace(dataProtectionKeysPath) && !builder.Environment.Is
 
 if (!string.IsNullOrWhiteSpace(dataProtectionKeysPath))
 {
-    Directory.CreateDirectory(dataProtectionKeysPath);
+    try
+    {
+        Directory.CreateDirectory(dataProtectionKeysPath);
+    }
+    catch (UnauthorizedAccessException)
+    {
+        dataProtectionKeysPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            ".aspnet",
+            "DataProtection-Keys");
+        Directory.CreateDirectory(dataProtectionKeysPath);
+    }
+
     builder.Services.AddDataProtection()
         .PersistKeysToFileSystem(new DirectoryInfo(dataProtectionKeysPath));
 }

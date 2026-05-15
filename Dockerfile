@@ -15,4 +15,4 @@ RUN useradd -m cvapp \
 COPY --chown=cvapp:cvapp --from=build /app/publish .
 USER cvapp
 EXPOSE 8080
-ENTRYPOINT ["dotnet", "CV_Website.dll"]
+ENTRYPOINT ["sh", "-c", "mkdir -p /data/dp-keys 2>/dev/null || true; dotnet CV_Website.dll"]
