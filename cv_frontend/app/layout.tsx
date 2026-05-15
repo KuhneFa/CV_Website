@@ -16,6 +16,14 @@ export const metadata: Metadata = {
   title: "My CV",
   description: "Mein Lebenslauf - Passwortgeschützt",
   generator: "Next.js",
+  robots: {
+    index: false,
+    follow: false,
+    googleBot: {
+      index: false,
+      follow: false,
+    },
+  },
 };
 
 export const viewport: Viewport = {
