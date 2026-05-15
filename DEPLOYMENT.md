@@ -22,6 +22,14 @@ RAILWAY_DOCKERFILE_PATH=/Dockerfile.frontend
 Then leave the frontend service root directory empty or set it to `/`; the
 frontend Dockerfile copies files from `cv_frontend/` explicitly.
 
+Railway variable values should be entered without quotes and without trailing
+newlines. For example:
+
+```text
+NEXT_PUBLIC_API_BASE=https://api.kathercv.de/api
+RAILWAY_DOCKERFILE_PATH=/Dockerfile.frontend
+```
+
 ## Backend Environment Variables
 
 Set these in the backend hosting platform:
