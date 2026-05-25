@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 
 interface PdfPreviewProps {
   pdfUrl: string;
+  downloadUrl?: string;
   title?: string;
 }
 
-export function PdfPreview({ pdfUrl, title = "PDF Viewer" }: PdfPreviewProps) {
+export function PdfPreview({ pdfUrl, downloadUrl, title = "PDF Viewer" }: PdfPreviewProps) {
   const [useExternalViewer, setUseExternalViewer] = useState(false);
 
   useEffect(() => {
@@ -29,7 +30,7 @@ export function PdfPreview({ pdfUrl, title = "PDF Viewer" }: PdfPreviewProps) {
           PDF öffnen
         </a>
         <a
-          href={pdfUrl}
+          href={downloadUrl || pdfUrl}
           download="Lebenslauf.pdf"
           className="text-sm text-white/70 underline-offset-4 hover:text-white hover:underline"
         >

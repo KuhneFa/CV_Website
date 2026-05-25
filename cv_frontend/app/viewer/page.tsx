@@ -20,7 +20,7 @@ export default function ViewerPage() {
   const loadPdf = async () => {
     setLoading(true);
     setError(null);
-    setPdfUrl(api.pdf.downloadUrl());
+    setPdfUrl(api.pdf.viewUrl());
     setLoading(false);
   };
 
@@ -74,7 +74,7 @@ export default function ViewerPage() {
 
       <main className="mx-auto flex min-h-[calc(100vh-112px)] w-full items-center justify-center py-8">
         <Card className="pdf-shell p-2">
-          <PdfPreview pdfUrl={pdfUrl} />
+          <PdfPreview pdfUrl={pdfUrl} downloadUrl={api.pdf.downloadUrl()} />
         </Card>
       </main>
     </div>

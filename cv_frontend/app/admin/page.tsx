@@ -19,7 +19,7 @@ export default function AdminPage() {
   }, []);
 
   const loadPdf = async () => {
-    setPdfUrl(api.pdf.downloadUrl());
+    setPdfUrl(api.pdf.viewUrl());
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -125,7 +125,7 @@ export default function AdminPage() {
         {pdfUrl && (
           <section className="flex justify-center pb-12">
             <Card className="pdf-shell p-2">
-              <PdfPreview pdfUrl={pdfUrl} />
+              <PdfPreview pdfUrl={pdfUrl} downloadUrl={api.pdf.downloadUrl()} />
             </Card>
           </section>
         )}

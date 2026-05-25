@@ -27,7 +27,7 @@ public class PdfController : ControllerBase
     /// GET: /api/pdf/download
     /// </summary>
     [HttpGet("download")]
-    public IActionResult Download()
+    public IActionResult Download([FromQuery] bool download = false)
     {
         // Authentifizierung prüfen
         if (!_pdfService.IsValidRequest(HttpContext))
@@ -39,10 +39,19 @@ public class PdfController : ControllerBase
         var pdfFilePath = _pdfService.GetPdfFilePath();
         if (!string.IsNullOrWhiteSpace(pdfFilePath))
         {
+            if (download)
+            {
+                return PhysicalFile(
+                    pdfFilePath,
+                    "application/pdf",
+                    "Lebenslauf.pdf",
+                    enableRangeProcessing: true
+                );
+            }
+
             return PhysicalFile(
                 pdfFilePath,
                 "application/pdf",
-                "Lebenslauf.pdf",
                 enableRangeProcessing: true
             );
         }
@@ -56,12 +65,18 @@ public class PdfController : ControllerBase
         }
 
         // PDF mit sicheren Headers zurückgeben
-        return File(
-            pdfContent,
-            "application/pdf",
-            "Lebenslauf.pdf",
-            enableRangeProcessing: true
-        );
+        return download
+            ? File(
+                pdfContent,
+                "application/pdf",
+                "Lebenslauf.pdf",
+                enableRangeProcessing: true
+            )
+            : File(
+                pdfContent,
+                "application/pdf",
+                enableRangeProcessing: true
+            );
     }
 
     /// <summary>

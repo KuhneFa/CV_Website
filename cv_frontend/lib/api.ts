@@ -72,7 +72,8 @@ export const api = {
   },
 
   pdf: {
-    downloadUrl: () => `${API_BASE}/pdf/download?v=${Date.now()}`,
+    viewUrl: () => `${API_BASE}/pdf/download?v=${Date.now()}`,
+    downloadUrl: () => `${API_BASE}/pdf/download?download=true&v=${Date.now()}`,
 
     download: async () => {
       const response = await fetch(`${API_BASE}/pdf/download`, {
