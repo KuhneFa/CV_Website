@@ -82,7 +82,9 @@ builder.Services.Configure<IpRateLimitOptions>(options =>
     };
 });
 
-var allowedOrigins = builder.Configuration["Cors:AllowedOrigins"]?.Split(",") ?? new[] { "http://localhost:3000" };
+var allowedOrigins = builder.Configuration["Cors:AllowedOrigins"]
+    ?.Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+    ?? new[] { "http://localhost:3000" };
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowedOrigins", policy =>
