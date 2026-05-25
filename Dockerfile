@@ -13,6 +13,7 @@ RUN useradd -m cvapp \
     && mkdir -p /data \
     && chown -R cvapp:cvapp /app /data
 COPY --chown=cvapp:cvapp --from=build /app/publish .
-USER cvapp
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 EXPOSE 8080
-ENTRYPOINT ["sh", "-c", "mkdir -p /data/dp-keys 2>/dev/null || true; dotnet CV_Website.dll"]
+ENTRYPOINT ["docker-entrypoint.sh"]
