@@ -72,6 +72,8 @@ export const api = {
   },
 
   pdf: {
+    downloadUrl: () => `${API_BASE}/pdf/download?v=${Date.now()}`,
+
     download: async () => {
       const response = await fetch(`${API_BASE}/pdf/download`, {
         credentials: "include",

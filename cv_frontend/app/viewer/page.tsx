@@ -17,28 +17,11 @@ export default function ViewerPage() {
     loadPdf();
   }, []);
 
-  useEffect(() => {
-    return () => {
-      if (pdfUrl) {
-        URL.revokeObjectURL(pdfUrl);
-      }
-    };
-  }, [pdfUrl]);
-
   const loadPdf = async () => {
     setLoading(true);
     setError(null);
-    
-    try {
-      const blob = await api.pdf.download();
-      const url = URL.createObjectURL(blob);
-      setPdfUrl(url);
-    } catch (error) {
-      setError("PDF konnte nicht geladen werden. Bitte versuchen Sie es später erneut.");
-      setLoading(false);
-    } finally {
-      setLoading(false);
-    }
+    setPdfUrl(api.pdf.downloadUrl());
+    setLoading(false);
   };
 
   const handleLogout = async () => {

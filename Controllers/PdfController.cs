@@ -36,6 +36,17 @@ public class PdfController : ControllerBase
             return Unauthorized(new { message = "Authentifizierung erforderlich" });
         }
 
+        var pdfFilePath = _pdfService.GetPdfFilePath();
+        if (!string.IsNullOrWhiteSpace(pdfFilePath))
+        {
+            return PhysicalFile(
+                pdfFilePath,
+                "application/pdf",
+                "Lebenslauf.pdf",
+                enableRangeProcessing: true
+            );
+        }
+
         // PDF laden
         byte[]? pdfContent = _pdfService.GetPdfContent();
         if (pdfContent == null || pdfContent.Length == 0)

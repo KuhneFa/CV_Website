@@ -6,6 +6,11 @@ namespace CVWebsite.Services;
 public interface IPdfService
 {
     /// <summary>
+    /// Gibt den Datei-Pfad der gespeicherten PDF zurück, falls vorhanden
+    /// </summary>
+    string? GetPdfFilePath();
+
+    /// <summary>
     /// Gibt die PDF als Byte-Array zurück
     /// </summary>
     byte[]? GetPdfContent();
@@ -65,6 +70,14 @@ public class PdfService : IPdfService
         }
 
         return Path.Combine(env.ContentRootPath, "data", "cv.pdf");
+    }
+
+    /// <summary>
+    /// PDF-Dateipfad laden
+    /// </summary>
+    public string? GetPdfFilePath()
+    {
+        return File.Exists(_pdfStoragePath) ? _pdfStoragePath : null;
     }
 
     /// <summary>

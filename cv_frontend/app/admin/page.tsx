@@ -18,22 +18,8 @@ export default function AdminPage() {
     loadPdf();
   }, []);
 
-  useEffect(() => {
-    return () => {
-      if (pdfUrl) {
-        URL.revokeObjectURL(pdfUrl);
-      }
-    };
-  }, [pdfUrl]);
-
   const loadPdf = async () => {
-    try {
-      const blob = await api.pdf.download();
-      const url = URL.createObjectURL(blob);
-      setPdfUrl(url);
-    } catch (error) {
-      console.log("PDF noch nicht vorhanden");
-    }
+    setPdfUrl(api.pdf.downloadUrl());
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
