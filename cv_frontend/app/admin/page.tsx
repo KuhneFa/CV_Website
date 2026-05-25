@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
+import { PdfPreview } from "@/components/PdfPreview";
 import { api } from "@/lib/api";
 
 export default function AdminPage() {
@@ -16,6 +17,14 @@ export default function AdminPage() {
   useEffect(() => {
     loadPdf();
   }, []);
+
+  useEffect(() => {
+    return () => {
+      if (pdfUrl) {
+        URL.revokeObjectURL(pdfUrl);
+      }
+    };
+  }, [pdfUrl]);
 
   const loadPdf = async () => {
     try {
@@ -130,13 +139,7 @@ export default function AdminPage() {
         {pdfUrl && (
           <section className="flex justify-center pb-12">
             <Card className="pdf-shell p-2">
-              <div className="overflow-hidden bg-black">
-                <iframe
-                  src={pdfUrl}
-                  className="pdf-frame"
-                  title="PDF Viewer"
-                />
-              </div>
+              <PdfPreview pdfUrl={pdfUrl} />
             </Card>
           </section>
         )}
